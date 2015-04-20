@@ -4,36 +4,50 @@ library(data.table)
 
 pc <- function(...) paste(..., collapse = ',')
 
-fix_data <- function(x) {
-  suppressWarnings({
-    x <- colwise(function(col) {
-      # return if all na
-      if (all(is.na(col))) col
-      # char -> numeric
-      else if (all(is.na(col) | !is.na(as.numeric(col)))) as.numeric(col)
-      # char -> date
-      else if (all(is.na(col) | grepl("^\\d\\d\\d\\d-\\d\\d-\\d\\d", col))) as.Date(col)
-      # if no match, return as is
-      else col
-    })(x)
-  })
-  return(data.table(x))
-}
-
 # max 5000 per request, use next_page
-
 fetch <- function(url, ...) {
-  x <- content(GET(sprintf(url, ...)))
-  x <- rbindlist(lapply(x$values, function(i) data.table(t(unlist(i)))), fill = T)
-  fix_data(x)
+  res <- NULL
+  url <- sprintf(url, ...)
+  while (!is.null(url)) {
+    message('fetching ', url, ' ...')
+    x <- content(GET(url))
+    url <- x$next_page
+    res <- rbindlist(list(res, rbindlist(lapply(x$values, function(i) data.table(t(unlist(i)))), fill = T)), fill = T)
+  }
+  return(res)
 }
 
 K <- fetch('http://api.kolada.se/v2/kpi')
 M <- fetch('http://api.kolada.se/v2/municipality')
-
-kpi <- c('N15033', 'N00945')
 year <- 2000:2012
-municipality <- 1860
+x <- fetch('http://api.kolada.se/v2/data/kpi/%s/municipality/%s/year/%s', pc(head(K$id,100)), pc(M$id), pc(year))
 
-x <- fetch('http://api.kolada.se/v2/data/kpi/%s/municipality/%s/year/%s', pc(head(K$id)), pc(head(M$id)), pc(year))
-x
+# Join muncipalities
+setnames(M, names(M), paste('municipality', names(M), sep = '.'))
+setkey(x, municipality)
+setkey(M, municipality.id)
+x <- M[x]
+
+# Join KPI
+setnames(K, names(K), paste('kpi', names(K), sep = '.'))
+setkey(x, kpi)
+setkey(K, kpi.id)
+x <- K[x]
+
+x[, c(
+  'period',
+  'kpi.publ_period',
+  'values.count',
+  'values.value',
+  'kpi.prel_publication_date',
+  'kpi.publication_date',
+  'kpi.ou_publication_date'
+) := list(
+  as.integer(period),
+  as.integer(kpi.publ_period),
+  as.integer(values.count),
+  as.double(values.value),
+  as.Date(kpi.prel_publication_date),
+  as.Date(kpi.publication_date),
+  as.Date(kpi.ou_publication_date)
+)]
