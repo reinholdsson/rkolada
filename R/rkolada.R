@@ -1,7 +1,7 @@
 Kolada <- R6Class("Kolada",
   public = list(
     initialize = function() {
-      
+      # do nothing
     },
     
     # max 5000 per request, use next_page
@@ -18,53 +18,37 @@ Kolada <- R6Class("Kolada",
     },
     
     fetch_meta_data = function(x) {
-      D <- fetch('http://api.kolada.se/v2/%s', x)
+      D <- self$fetch('http://api.kolada.se/v2/%s', x)
       setnames(D, names(D), paste(x, names(D), sep = '.'))
       return(D)
     },
     
     kpi = function() {
-      fetch_meta_data('kpi')
+      self$fetch_meta_data('kpi')
     },
     
     municipality = function() {
-      fetch_meta_data('municipality')
+      self$fetch_meta_data('municipality')
     },
     
-    data = function(kpi, municipality, year) {
-      x <- fetch('http://api.kolada.se/v2/data/kpi/%s/municipality/%s/year/%s', pasteC(kpi), pasteC(municipality), pasteC(year))
+    values = function(kpi, municipality, year, all = F) {
+      x <- self$fetch('http://api.kolada.se/v2/data/kpi/%s/municipality/%s/year/%s', pasteC(kpi), pasteC(municipality), pasteC(year))
       
-      x[, c(
-        'period',
-        'kpi.publ_period',
-        'values.count',
-        'values.value',
-        'kpi.prel_publication_date',
-        'kpi.publication_date',
-        'kpi.ou_publication_date'
-      ) := list(
-        as.integer(period),
-        as.integer(kpi.publ_period),
-        as.integer(values.count),
-        as.double(values.value),
-        as.Date(kpi.prel_publication_date),
-        as.Date(kpi.publication_date),
-        as.Date(kpi.ou_publication_date)
-      )]
+      setnames(x, c('kpi', 'municipality'), c('kpi.id', 'municipality.id'))
+      
+      if (all) {
+        x <- merge(x, self$kpi(), by = 'kpi.id', all.x = T)
+        x <- merge(x, self$municipality(), by = 'municipality.id', all.x = T)
+      }
       
       return(x)
     }
   )
 )
 
+#' rkolada
+#' 
+#' Access the Kolada API
+#' 
+#' @export
 rkolada <- function(...) Kolada$new(...)
-
-# # Join muncipalities
-# setkey(x, municipality)
-# setkey(M, municipality.id)
-# x <- M[x]
-# 
-# # Join KPI
-# setkey(x, kpi)
-# setkey(K, kpi.id)
-# x <- K[x]
