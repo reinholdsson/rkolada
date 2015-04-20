@@ -35,14 +35,14 @@ Kolada <- R6Class("Kolada",
       self$fetch_meta_data('municipality', ...)
     },
     
-    values = function(kpi, municipality, year, all = F) {
+    values = function(kpi, municipality, year, all.cols = F) {
       x <- self$fetch('http://api.kolada.se/v2/data/kpi/%s/municipality/%s/year/%s', pasteC(kpi), pasteC(municipality), pasteC(year))
       
       setnames(x, c('kpi', 'municipality'), c('kpi.id', 'municipality.id'))
       
-      if (all) {
-        x <- merge(x, self$kpi(), by = 'kpi.id', all.x = T)
-        x <- merge(x, self$municipality(), by = 'municipality.id', all.x = T)
+      if (all.cols) {
+        x <- merge(x, self$kpi(kpi), by = 'kpi.id', all.x = T)
+        x <- merge(x, self$municipality(municipality), by = 'municipality.id', all.x = T)
       }
       
       return(x)
