@@ -1,7 +1,8 @@
 Kolada <- R6Class("Kolada",
   public = list(
-    initialize = function() {
-      # do nothing
+    convert = F,  # TRUE currently causes encoding issues (åäö)
+    initialize = function(convert) {
+      if (!missing(convert)) self$convert <- convert
     },
     
     # max 5000 per request, use next_page
@@ -12,8 +13,16 @@ Kolada <- R6Class("Kolada",
         message('fetching ', url, ' ...')
         x <- content(GET(url))
         url <- x$next_page
-        res <- rbindlist(list(res, rbindlist(lapply(x$values, function(i) data.table(t(unlist(i)))), fill = T)), fill = T)
+        res <- rbindlist(list(
+          res,
+          rbindlist(lapply(x$values, function(i) data.table(t(unlist(i)))), fill = T)
+        ), fill = T)
       }
+      
+      if (self$convert) {
+        res <- self$convert_table(res) 
+      }
+      
       return(res)
     },
     
@@ -25,6 +34,10 @@ Kolada <- R6Class("Kolada",
       D <- self$fetch(url, x, pasteC(y))
       setnames(D, names(D), paste(x, names(D), sep = '.'))
       return(D)
+    },
+    
+    convert_table = function(x) {
+      readr::type_convert(x)
     },
     
     kpi = function(...) {
