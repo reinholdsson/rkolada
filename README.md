@@ -1,5 +1,7 @@
 # rkolada
 
+Simple R package to access the Kolada API (http://www.kolada.se/).
+
     # devtools::install_github('reinholdsson/rkolada')
     library(rkolada)
     x <- rkolada()
