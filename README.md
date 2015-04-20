@@ -22,4 +22,5 @@ Simple R package to access the Kolada API (http://www.kolada.se/).
 
     x$values('N00006', '0764', 2000:2010)
     x$values('N00006', '0764', 2000:2010, all.cols = T)  # with extra kpi and municipality columns (meta data)
+    x$values(c('N00006', 'N00007'))  # get all municipalites and years of both kpi:s
     

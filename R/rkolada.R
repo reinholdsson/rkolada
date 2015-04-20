@@ -35,7 +35,19 @@ Kolada <- R6Class("Kolada",
       self$fetch_meta_data('municipality', ...)
     },
     
-    values = function(kpi, municipality, year, all.cols = F) {
+    values = function(
+      kpi,
+      municipality = NULL,
+      year = NULL,
+      all.cols = F
+    ) {
+      
+      if (is.null(kpi) || !is.character(kpi)) stop('Provide at least one or more kpi id:s (as character) ...')
+      
+      # Get all (default) if no values are provided
+      if (is.null(municipality)) municipality <- self$municipality()$municipality.id
+      if (is.null(year)) year <- 1970:(year(Sys.Date()))
+      
       x <- self$fetch('http://api.kolada.se/v2/data/kpi/%s/municipality/%s/year/%s', pasteC(kpi), pasteC(municipality), pasteC(year))
       
       setnames(x, c('kpi', 'municipality'), c('kpi.id', 'municipality.id'))
