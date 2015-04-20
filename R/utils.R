@@ -1,0 +1,1 @@
+pasteC <- function(...) paste(..., collapse = ',')
