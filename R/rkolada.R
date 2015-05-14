@@ -1,6 +1,6 @@
 Kolada <- R6Class("Kolada",
   public = list(
-    convert = F,  # TRUE currently causes encoding issues (åäö)
+    convert = T,
     initialize = function(convert) {
       if (!missing(convert)) self$convert <- convert
     },
@@ -20,7 +20,7 @@ Kolada <- R6Class("Kolada",
       }
       
       if (self$convert) {
-        res <- self$convert_table(res) 
+        res <- self$convert_table(res)
       }
       
       return(res)
@@ -37,7 +37,11 @@ Kolada <- R6Class("Kolada",
     },
     
     convert_table = function(x) {
-      readr::type_convert(x)
+      cast(x, as.Date, c('prel_publication_date', 'publication_date', 'ou_publication_date'))
+      cast(x, as.numeric, c('values.value'))
+      cast(x, as.integer, c('values.count', 'publ_period', 'period', 'is_divided_by_gender'))
+      cast(x, as.logical, c('values.gender', 'has_ou_data'))
+      return(x)
     },
     
     kpi = function(...) {
