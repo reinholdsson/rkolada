@@ -6,5 +6,5 @@ Date: 2015-05-14
 Author: Thomas Reinholdsson
 Maintainer: Thomas Reinholdsson <reinholdsson@gmail.com>
 Description: Simple R package to access the Kolada API
-Depends: R6, data.table, httr, lubridate
+Depends: R6, data.table, httr, lubridate, dplyr
 License: AGPLv3

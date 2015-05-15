@@ -23,6 +23,8 @@ Kolada <- R6Class("Kolada",
         res <- self$convert_table(res)
       }
       
+      res <- tbl_dt(res)  # convert to dplyr local data table, for more conveniet output print
+      
       return(res)
     },
     
