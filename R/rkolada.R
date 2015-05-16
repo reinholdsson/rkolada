@@ -15,7 +15,13 @@ Kolada <- R6Class("Kolada",
         url <- x$next_page
         res <- rbindlist(list(
           res,
-          rbindlist(lapply(x$values, function(i) data.table(t(unlist(i)))), fill = T)
+          rbindlist(lapply(x$values, function(i) {
+            if (length(i$value) > 1) {
+              data.table(kpi = i$kpi, municipality = i$municipality, period = i$period, rbindlist(i$value))
+            } else {
+              data.table(t(unlist(i)))
+            }
+          }), fill = T)
         ), fill = T)
       }
       
@@ -42,7 +48,7 @@ Kolada <- R6Class("Kolada",
       cast(x, as.Date, c('prel_publication_date', 'publication_date', 'ou_publication_date'))
       cast(x, as.numeric, c('values.value'))
       cast(x, as.integer, c('values.count', 'publ_period', 'period', 'is_divided_by_gender'))
-      cast(x, as.logical, c('values.gender', 'has_ou_data'))
+      cast(x, as.logical, c('has_ou_data'))
       return(x)
     },
     
