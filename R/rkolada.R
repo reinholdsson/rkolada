@@ -16,7 +16,8 @@ Kolada <- R6Class("Kolada",
         res <- rbindlist(list(
           res,
           rbindlist(lapply(x$values, function(i) {
-            if (!is.null(i$values) && length(i$values) > 1) {
+            if (!is.null(i$values) && length(i$values) > 0) {
+              
               # Fix: U01402 returns NULL as value (don't know why), which causes:
               # Error in rbindlist(i$value) : attempt to set an attribute on NULL
               vals <- lapply(i$values, function(j) {
