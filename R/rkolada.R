@@ -16,8 +16,14 @@ Kolada <- R6Class("Kolada",
         res <- rbindlist(list(
           res,
           rbindlist(lapply(x$values, function(i) {
-            if (!is.null(i$value) && length(i$value) > 1) {
-              data.table(kpi = i$kpi, municipality = i$municipality, period = i$period, rbindlist(i$value))
+            if (!is.null(i$values) && length(i$values) > 1) {
+              # Fix: U01402 returns NULL as value (don't know why), which causes:
+              # Error in rbindlist(i$value) : attempt to set an attribute on NULL
+              vals <- lapply(i$values, function(j) {
+                if (is.null(j$value)) j$value <- NA
+                return(j)
+              })
+              data.table(kpi = i$kpi, municipality = i$municipality, period = i$period, rbindlist(vals))
             } else {
               data.table(t(unlist(i)))
             }
@@ -75,12 +81,14 @@ Kolada <- R6Class("Kolada",
       
       x <- self$fetch('http://api.kolada.se/v2/data/kpi/%s/municipality/%s/year/%s', pasteC(kpi), pasteC(municipality), pasteC(year))
       
-      setnames(x, c('kpi', 'municipality'), c('kpi.id', 'municipality.id'))
-      
-      if (all.cols) {
-        x <- merge(x, self$kpi(kpi), by = 'kpi.id', all.x = T)
-        x <- merge(x, self$municipality(municipality), by = 'municipality.id', all.x = T)
-      }
+      if (nrow(x) > 0) {
+        setnames(x, c('kpi', 'municipality'), c('kpi.id', 'municipality.id'))
+        
+        if (all.cols) {
+          x <- merge(x, self$kpi(kpi), by = 'kpi.id', all.x = T)
+          x <- merge(x, self$municipality(municipality), by = 'municipality.id', all.x = T)
+        }
+      } else message('... no data found ...')
       
       return(x)
     }
