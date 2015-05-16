@@ -3,6 +3,20 @@
 #' ...
 pasteC <- function(...) paste(..., collapse = ',')
 
+#' Convert 0/1 to logical
+#' 
+#' ...
+binary_to_logical <- function(x) {
+  sapply(x, function(i) {
+    switch(as.character(i),
+      '0' = F,
+      '1' = T,
+      NA
+    )
+  })
+}
+
+
 #' Cast column types in data.table
 #' 
 #' Function to change a column type for data.table columns.
