@@ -2,7 +2,7 @@ Package: rkolada
 Type: Package
 Title: rkolada
 Version: 1.1
-Date: 2015-05-16
+Date: 2015-05-17
 Author: Thomas Reinholdsson
 Maintainer: Thomas Reinholdsson <reinholdsson@gmail.com>
 Description: Simple R package to access the Kolada API

@@ -46,8 +46,8 @@ Kolada <- R6Class("Kolada",
     
     convert_table = function(x) {
       cast(x, as.Date, c('prel_publication_date', 'publication_date', 'ou_publication_date'))
-      cast(x, as.numeric, c('values.value'))
-      cast(x, as.integer, c('values.count', 'publ_period', 'period', 'is_divided_by_gender'))
+      cast(x, as.numeric, c('value'))
+      cast(x, as.integer, c('count', 'publ_period', 'period', 'is_divided_by_gender'))
       cast(x, as.logical, c('has_ou_data'))
       return(x)
     },
