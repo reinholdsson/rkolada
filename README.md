@@ -4,7 +4,7 @@ Simple R package to access the Kolada API (http://www.kolada.se/).
 
     # devtools::install_github('reinholdsson/rkolada')
     library(rkolada)
-    a <- rkolada()
+    a <- rkolada::rkolada()
 
 ## Get kpi:s
 
