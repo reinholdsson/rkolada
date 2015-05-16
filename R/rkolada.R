@@ -16,7 +16,7 @@ Kolada <- R6Class("Kolada",
         res <- rbindlist(list(
           res,
           rbindlist(lapply(x$values, function(i) {
-            if (length(i$value) > 1) {
+            if (!is.null(i$value) && length(i$value) > 1) {
               data.table(kpi = i$kpi, municipality = i$municipality, period = i$period, rbindlist(i$value))
             } else {
               data.table(t(unlist(i)))
