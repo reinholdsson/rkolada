@@ -1,10 +1,10 @@
 Package: rkolada
 Type: Package
 Title: rkolada
-Version: 1.1
-Date: 2015-05-17
+Version: 1.2
+Date: 2015-10-02
 Author: Thomas Reinholdsson
 Maintainer: Thomas Reinholdsson <reinholdsson@gmail.com>
 Description: Simple R package to access the Kolada API
-Depends: curl, R6, data.table, httr, lubridate, dplyr, rjson
+Depends: curl, R6, data.table, httr, lubridate, rjson
 License: AGPLv3

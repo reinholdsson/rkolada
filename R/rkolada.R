@@ -11,7 +11,7 @@ Kolada <- R6Class("Kolada",
       url <- sprintf(url, ...)
       while (!is.null(url)) {
         message('fetching ', url, ' ...')
-        x <- content(GET(url))
+        x <- httr::content(GET(url))
         url <- x$next_page
         res <- rbindlist(list(
           res,
@@ -35,8 +35,6 @@ Kolada <- R6Class("Kolada",
       if (self$convert) {
         res <- self$convert_table(res)
       }
-      
-      res <- tbl_dt(res)  # convert to dplyr local data table, for more conveniet output print
       
       return(res)
     },
