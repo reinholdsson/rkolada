@@ -8,3 +8,4 @@ Maintainer: Thomas Reinholdsson <reinholdsson@gmail.com>
 Description: Simple R package to access the Kolada API
 Depends: curl, R6, data.table, httr, lubridate, rjson
 License: AGPLv3
+RoxygenNote: 6.1.1
